@@ -1,4 +1,6 @@
 const User = require("../models/UserModel");
+const sendEmail = require("../utils/email");
+const crypto=require('crypto');
 
 exports.registerUser = async (req, res, next) => {
   const { name, email, password, avatar } = req.body;
@@ -60,4 +62,92 @@ exports.logout= (req,res,next) => {
 
 
    
+}
+
+exports.forgotPassword = async (req, res, next) => {
+  
+    const user = await User.findOne({ email: req.body.email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User email does not exist" });
+    }
+
+    // Generate reset token
+    const resetToken = await user.getResetToken();
+
+    await user.save({ validateBeforeSave: false });
+
+    // Create reset URL
+    const resetUrl = `${req.protocol}://${req.get('host')}/auth/password/reset/${resetToken}`;
+
+    const message = `Your password reset token URL is as follows:\n\n${resetUrl}\n\nIf you have not requested this email, please ignore it.`;
+
+    
+    try{
+
+
+      sendEmail({
+        email:user.email,
+        subject:"jvlcode password recovery",
+        message:message
+      })
+
+      res.status(200).json({message:`sucesfully email to ${user.email}  sucesfully`,
+
+      })
+    }
+
+   catch (error) {
+    // Clean up token fields if something goes wrong
+    user.resetPasswordToken = undefined;
+    user.resetPasswordTokenExpire = undefined;
+
+    await user.save({ validateBeforeSave: false });
+
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+
+exports.resetPassword=async (req,res,next) =>{
+
+ const resetPasswordToken= crypto.createHash('sha256').update(req.params.token).digest('hex');
+
+ const user=await User.findOne({
+
+  resetPasswordToken,
+  resetPasswordTokenExpire:{
+    $gt : Date.now()
+  }
+ })
+
+
+ if(!user){
+
+  return res.json({message:"token is invalid or expired"});
+ }
+
+
+ if(req.body.password !==req.body.confirmPassword){
+  res.json({message:"password does not match"})
+ }
+
+user.password=req.body.password;
+user.resetPasswordToken=undefined;
+user.resetPasswordTokenExpire=undefined;
+await user.save({validateBeforeSave:false})
+
+
+const token = user.getJwtToken();
+
+  const option = {
+    expires: new Date(Date.now() + process.env.COOKIE_EXPIRES_TIME * 24 * 60 * 60 * 1000),
+    httpOnly: true,
+         
+  };
+
+  return res
+    .status(200)
+    .cookie('token', token, option)
+    .json({ success: true, user: user, token });
 }
