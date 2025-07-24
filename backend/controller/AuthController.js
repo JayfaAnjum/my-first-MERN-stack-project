@@ -2,6 +2,9 @@ const User = require("../models/UserModel");
 const sendEmail = require("../utils/email");
 const crypto=require('crypto');
 
+
+
+//registered user
 exports.registerUser = async (req, res, next) => {
   const { name, email, password, avatar } = req.body;
 
@@ -20,6 +23,8 @@ exports.registerUser = async (req, res, next) => {
     .json({ success: true, user: user1, token });
 };
 
+
+//login user
 exports.loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -52,6 +57,8 @@ exports.loginUser = async (req, res, next) => {
     .json({ success: true, user: user2, token });
 };
 
+
+//logout user
 exports.logout= (req,res,next) => {
 
     
@@ -63,7 +70,7 @@ exports.logout= (req,res,next) => {
 
    
 }
-
+//forgot password
 exports.forgotPassword = async (req, res, next) => {
   
     const user = await User.findOne({ email: req.body.email });
@@ -108,7 +115,7 @@ exports.forgotPassword = async (req, res, next) => {
   }
 };
 
-
+//resetpassword
 exports.resetPassword=async (req,res,next) =>{
 
  const resetPasswordToken= crypto.createHash('sha256').update(req.params.token).digest('hex');
@@ -150,4 +157,51 @@ const token = user.getJwtToken();
     .status(200)
     .cookie('token', token, option)
     .json({ success: true, user: user, token });
+}
+
+
+exports.getUserProfile = async(req,res,next)=>{
+
+ const user= await User.findById(req.user.id)
+ res.status(200).json({
+  sucess:true,
+  user
+ })
+}
+
+
+exports.changePassword =async(req,res,next)=>{
+const user=await User.findById(req.user.id).select('+password');
+//check old password
+
+if(await user.isValidPassword(req.body.oldPassword)){
+  return res.json({message:"old password is incorrect"})
+}
+
+
+//assigning new password
+
+user.password =req.body.password;
+await user.save();
+
+}
+
+//update profile 
+exports.updateProfile = async (req,res,next)=>{
+   
+  const newUserData = {
+    name:req.body.name,
+    email:req.body.email
+  }
+
+  const user = await User.findByIdAndUpdate(req.user.id,newUserData,{
+    new:true,
+    runValidators: true,
+
+  })
+
+  res.status(200).json({
+    sucess:true,
+  })
+
 }
