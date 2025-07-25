@@ -201,7 +201,61 @@ exports.updateProfile = async (req,res,next)=>{
   })
 
   res.status(200).json({
-    sucess:true,
+    sucess:true,user
   })
 
+}
+
+
+//Admin: get all users
+
+exports.getAllUsers = async(req,res,next) =>{
+
+  const users =await User.find();
+  res.status(200).json({message:"all users get to the adminpanel sucessfully",users});
+}
+
+//admin get specific user
+
+exports.getUser =async(req,res,next)=>{
+
+  const user =await User.findById(req.params.id);
+  if(!user){
+    return res.json({message:"this is user id is not exist in the field"})
+  }
+
+  res.status(200).json({message:"this user get to the adminpanel sucessfully",user});
+
+}
+
+//Admin:update User 
+exports.updateUser =async(req,res,next)=>{
+
+  const newUserData = {
+    name:req.body.name,
+    email:req.body.email,
+    role:req.body.role
+  }
+
+  const user = await User.findByIdAndUpdate(req.params.id,newUserData,{
+    new:true,
+    runValidators: true,
+
+  })
+
+  res.status(200).json({
+    sucess:true,user
+  })
+
+}
+
+//api service delete user
+
+exports.deleteUser =async(req,res,next)=>{
+ const user =await User.findById(req.params.id);
+  if(!user){
+    return res.json({message:"this is user id is not exist in the field"})
+  }
+await user.remove()
+  res.status(200).json({message:"this user delete from  adminpanel sucessfully"});
 }
