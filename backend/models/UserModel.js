@@ -91,7 +91,7 @@ return token;
 
 }
 
-const model=mongoose.model('user',userSchema);
+const model=mongoose.model('User',userSchema);
 
 module.exports=model;
 
