@@ -1,5 +1,4 @@
 import { useState,useEffect } from "react";
-// import Car from "./car.jsx";
 
 export default  function Demo(){
 const [count,setCount]=useState(0);
