@@ -1,6 +1,6 @@
 const User = require('../models/UserModel'); 
 
-
+const Product = require('../models/ProductModel');
 const Order= require('../models/OrderModel');
 
 
@@ -80,4 +80,57 @@ res.json({
         totalamount,
         orders
 });
+}
+
+exports.updateOrder = async (req, res, next) => {
+  const order = await Order.findById(req.params.id);
+
+  if (!order) {
+    return res.status(404).json({ message: "Order not found" });
+  }
+
+  if (order.orderStatus === 'Delivered') {
+    return res.status(400).json({ message: "Order has already been delivered" });
+  }
+
+  // ✅ Wait for all stock updates
+ 
+   await order.orderItems.map(item =>
+      updateStock(item.product, item.quantity)
+    )
+  
+
+  order.orderStatus = req.body.orderStatus;
+  order.deliveredAt = Date.now();
+  await order.save();
+
+  res.json({ message: "Order updated and stock adjusted successfully" });
+};
+
+
+async function updateStock(productId, quantity) {
+  const product1 = await Product.findById(productId);
+
+  
+
+  const currentStock = parseInt(product1.stock, 10);
+  const updatedStock = currentStock - quantity;
+
+  product1.stock = updatedStock.toString();
+   product1.save({ validateBeforeSave: false });
+}
+
+
+exports.deleteOrder=async(req,res,next)=>{
+
+    const order=await Order.findById(req.params.id);
+
+    if(!order){
+        res.json({message:"there is no such order"});
+    }
+    await order.remove();
+
+
+res.json({message:'order delete sucessfully got',order});
+
 }

@@ -53,7 +53,7 @@ price:{
 product:{
     type:mongoose.SchemaTypes.ObjectId,
     required:true,
-    ref:'Product'
+    ref:'product'
 }
     }],
     itemsPrice:{
