@@ -5,10 +5,10 @@ const {
   createCollection,
   importToTypesense,
   searchProducts,
-  deleteCollection,
-  listCollections,
   getSingleProduct,
   createProducts,
+  updateProduct,
+  deleteProduct,
  
 } = require('../controller/ProductController');
 
@@ -18,6 +18,9 @@ const router = express.Router();
 
 router.route('/product').get(isAuthenticatedUser,authorizedRoles('user'),getProducts);
 router.route('/create').post(isAuthenticatedUser,authorizedRoles('user'),createProducts);
+router.route('/update').put(isAuthenticatedUser,authorizedRoles('user'),updateProduct);
+router.route('/delete').delete(isAuthenticatedUser,authorizedRoles('user'),deleteProduct);
+ 
  
 
 router.route('/product/search').get(searchProducts);
@@ -26,7 +29,7 @@ router.route('/product/create-collection').post(createCollection);
  router.route('/product/:id').get(getSingleProduct);
 
 router.route('/product/import').get(importToTypesense);
-router.route('/product/delete-collection').get(deleteCollection);
-router.route('/product/list-collections').get(listCollections);
+
+
 
 module.exports = router;

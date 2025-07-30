@@ -1,6 +1,6 @@
 const ProductModel = require('../models/ProductModel');
 const typesense = require('../config/typesenseClient');
-const productmodel = require('../models/ProductModel');
+
 
 
 exports.createCollection = async (req, res) => {
@@ -13,6 +13,7 @@ exports.createCollection = async (req, res) => {
       { name: 'image', type: 'string[]' },
       { name: 'category', type: 'string' },
       { name: 'stock', type: 'string' },
+      {name:'user', type:'string'},
     ],
     
   };
@@ -62,6 +63,9 @@ exports.importToTypesense = async (req, res) => {
 };
 
 
+
+
+
 exports.searchProducts = async (req, res) => {
   const { q = '*' ,page=1 ,per_page=8 } = req.query;
 
@@ -103,7 +107,7 @@ exports.createProducts = async (req, res, next) => {
     const { name, price, description, image, category, stock } = req.body;
 
     
-    const response = await productmodel.create({
+    const product=ProductModel.create({
       name,
       price,
       description,
@@ -113,7 +117,23 @@ exports.createProducts = async (req, res, next) => {
       user:req.user.id,
     });
 
-    res.status(201).json({ message: "Successfully created record", response });
+
+    await typesense.collections('products').documents().create({
+
+      id:product._id.toString(),
+      name:product.name,
+      price: product.price,
+      desription:product.desription,
+      image:product.image.map(img=>img.image),
+      category: product.category,
+      stock: product.stock,
+      user: product.user.toString(),
+
+
+
+    })
+
+    res.status(201).json({ message: "Successfully created record", product });
   } catch (error) {
     console.error("Create product error:", error);
     res.status(500).json({ message: "Failed to create record" });
@@ -134,23 +154,64 @@ exports.getSingleProduct = async (req, res) => {
 };
 
 
-exports.deleteCollection = async (req, res) => {
-  try {
-    const result = await typesense.collections('products').delete();
-    res.json({ message: 'Collection deleted', result });
-  } catch (error) {
-    console.error('Delete failed:', error);
-    res.status(500).json({ message: 'Failed to delete collection', error });
-  }
-};
 
 
-exports.listCollections = async (req, res) => {
-  try {
-    const collections = await typesense.collections().retrieve();
-    res.json(collections);
-  } catch (error) {
-    console.error('List collections failed:', error);
-    res.status(500).json({ message: 'Failed to list collections' });
+exports.deleteProduct =async (req,res,next)=>{
+
+  const product=await ProductModel.findByIdAndDelete(req.params.id);
+
+  if(!product){
+     res.status(404).json({
+      message:'produc not found'
+    });
+
+    await typesense.collections('products').documents(product._id.toString()).delete();
   }
-};
+
+  res.json({
+    message:"product deleted sucessfully"
+  })
+}
+
+
+exports.updateProduct =async(req,res)=>{
+  try{
+
+    const productId=req.params.id;
+    const{name,price,desription,image,category,stock}=req.body;
+
+    const updatedProduct=await ProductModel.findByIdAndUpdate(
+      productId,
+      {name,price,desription,image,category,stock},
+      {new:true,runValidators:true}
+    );
+
+    if(!updatedProduct){
+
+      res.status(404).json({message:"Product not found"})
+    }
+
+    await typesense.collections('products').documents().upsert({
+      id:updatedProduct._id.toString(),
+      name:updatedProduct.name,
+      price:updatedProduct.price,
+      desription:updatedProduct.desription,
+      image: updatedProduct.image.map(img => img.image),
+      category:updatedProduct.category,
+      stock:updatedProduct.stock,
+      user:updatedProduct.user? updatedProduct.user.toString():undefined,
+
+    });
+
+    res.json({message:"product updated sucessfully",updatedProduct});
+
+
+
+
+  }catch(error){
+
+    res.json({message:"failed to update product"});
+  }
+}
+
+
