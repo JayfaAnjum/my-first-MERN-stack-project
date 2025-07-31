@@ -23,7 +23,7 @@ app.listen(process.env.PORT,() => {
 });
 app.use(express.json());
 app.use(cors({
-  origin: 'http://localhost:3000', // your frontend origin
+  origin: 'http://localhost:5173', 
   credentials: true,
 }));
 

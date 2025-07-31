@@ -3,7 +3,7 @@ const typesense = require('../config/typesenseClient');
 
 
 
-exports.createCollection = async (req, res) => {
+exports.createCollection = async (req, res,next) => {
   const schema = {
     name: 'products',
     fields: [
@@ -35,7 +35,7 @@ exports.createCollection = async (req, res) => {
 
 
 
-exports.importToTypesense = async (req, res) => {
+exports.importToTypesense = async (req, res,next) => {
   try {
     const products = await ProductModel.find();
 
@@ -66,7 +66,7 @@ exports.importToTypesense = async (req, res) => {
 
 
 
-exports.searchProducts = async (req, res) => {
+exports.searchProducts = async (req, res,next) => {
   const { q = '*' ,page=1 ,per_page=8 } = req.query;
 
   try {
@@ -92,7 +92,7 @@ exports.searchProducts = async (req, res) => {
 };
 
 
-exports.getProducts = async (req, res) => {
+exports.getProducts = async (req, res,next) => {
   try {
     const products = await ProductModel.find();
     res.json({ message: 'getProductsworking', products });
@@ -128,9 +128,6 @@ exports.createProducts = async (req, res, next) => {
       category: product.category,
       stock: product.stock,
       user: product.user.toString(),
-
-
-
     })
 
     res.status(201).json({ message: "Successfully created record", product });
@@ -141,7 +138,7 @@ exports.createProducts = async (req, res, next) => {
 };
 
 
-exports.getSingleProduct = async (req, res) => {
+exports.getSingleProduct = async (req, res,next) => {
   try {
     const product = await ProductModel.findById(req.params.id);
     if (!product) {
