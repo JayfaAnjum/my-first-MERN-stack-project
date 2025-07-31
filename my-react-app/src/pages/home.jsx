@@ -24,7 +24,7 @@ export default function Home() {
             <div className="hidden md:flex space-x-8 text-white text-lg">
               <a href="#" className=" font-medium hover:text-indigo-600 transition">Home</a>
               <a href="#" className=" font-medium hover:text-indigo-600 transition">Shop</a>
-              <Link to="/products" className=" font-medium hover:text-indigo-600 transition">Categories</Link>
+              <Link to="/products" className=" font-medium hover:text-indigo-600 transition">Products</Link>
               <Link href="#" className=" font-medium hover:text-indigo-600 transition">Contact</Link>
             </div>
 

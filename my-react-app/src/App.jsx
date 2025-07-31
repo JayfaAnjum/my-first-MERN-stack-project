@@ -1,10 +1,10 @@
 
 import Home from './pages/home.jsx';
 import Demo from './pages/demo.jsx';
-import CV from './pages/cv.jsx';
+
 import Cart from './pages/cart.jsx';
 import ProductDetails from './pages/productDetails.jsx';
-import viteLogo from '/vite.svg'
+
 import './App.css'
 import {BrowserRouter,Routes,Route} from 'react-router-dom';
 import Product from './pages/product.jsx';
@@ -25,7 +25,7 @@ function App() {
         <Route path='/products' element={<Product/>}>
         
         </Route>
-         <Route path='/cv' element={<CV/>}></Route>
+         
           <Route path='/' element={<Home/>}></Route>
           <Route path='/demo' element={<Demo/>}></Route>
              <Route path='/product/:id' element={<ProductDetails cartItems={cartItems}  setCartItems={setCartItems}/>}></Route> 

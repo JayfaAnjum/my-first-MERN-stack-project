@@ -1,29 +1,53 @@
 import { useEffect, useState } from "react";
 import ProductCard from '../components/productCard.jsx';
 import { Link } from "react-router-dom";
+import { fetchProducts } from "../actions/productsAction.jsx";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Product() {
-  const [products, setProducts] = useState([]);
+  // const [products, setProducts] = useState([]);
+  // const [query, setQuery] = useState("");
+  // const [page, setPage] = useState(1);
+  // const [totalPages, setTotalPages] = useState(1);
+
+  // useEffect(() => {
+  //   const fetchProducts = async () => {
+  //     try {
+  //       const res = await fetch(
+  //         `${import.meta.env.VITE_REACT_APP_URL}/product/search?q=${query}&page=${page}&per_page=8`
+  //       );
+  //       const data = await res.json();
+  //       setProducts(data.products); 
+  //       setTotalPages(data.totalPages); 
+  //       console.log("Data fetching failed", error);
+  //     }
+
+  //     catch(error){
+        
+  //     }
+  //   };
+
+  //   fetchProducts();
+  // }, [query, page]); 
+
+
+
+
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+
+  const dispatch = useDispatch();
+
+  const { loading, products, totalPages, error } = useSelector((state) => state.productsState);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await fetch(
-          `${import.meta.env.VITE_REACT_APP_URL}/product/search?q=${query}&page=${page}&per_page=8`
-        );
-        const data = await res.json();
-        setProducts(data.products); // array of products
-        setTotalPages(data.totalPages); // total number of pages
-      } catch (error) {
-        console.log("Data fetching failed", error);
-      }
-    };
+    dispatch(fetchProducts(query, page));
+  }, [dispatch, query, page]);
 
-    fetchProducts();
-  }, [query, page]); // ✅ Now depends on query and page
+
+  
+
+
 
   return (
     <>
@@ -36,7 +60,7 @@ export default function Product() {
         <div className="hidden md:flex space-x-8 text-white text-lg">
           <Link to="/" className=" font-medium hover:text-indigo-600 transition">Home</Link>
           <a href="#" className=" font-medium hover:text-indigo-600 transition">Shop</a>
-          <Link to="/products" className=" font-medium hover:text-indigo-600 transition">Categories</Link>
+          <Link to="/products" className=" font-medium hover:text-indigo-600 transition">Products</Link>
           <Link href="#" className=" font-medium hover:text-indigo-600 transition">Contact</Link>
         </div>
 
@@ -59,7 +83,7 @@ export default function Product() {
           placeholder="Search products..."
           value={query}
           onChange={(e) => {
-            setPage(1); // ✅ Reset page on new search
+            setPage(1); //  Reset page on new search
             setQuery(e.target.value);
           }}
           className="w-full md:w-150 px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-800 focus:border-transparent transition-all duration-300"

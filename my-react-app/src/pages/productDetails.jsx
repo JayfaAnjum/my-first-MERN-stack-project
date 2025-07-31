@@ -45,8 +45,7 @@ const [qty,setQty]=useState(0);
 
 
 
-  
-  // Sample product data
+ 
   const product = {
     id,
     
