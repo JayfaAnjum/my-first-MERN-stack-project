@@ -1,4 +1,4 @@
-import axios from 'axios';
+
 import { productsFail, productsRequest, productsSuccess } from '../slice/productsSlice';
 
 

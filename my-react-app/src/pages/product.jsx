@@ -65,12 +65,12 @@ export default function Product() {
         </div>
 
         <div className="flex items-center space-x-4">
-          <a
-            href="#"
+          <Link
+            to="/login"
             className="px-10 py-2 rounded-lg font-semibold bg-white text-pink-900 hover:bg-pink-900 hover:text-white transition shadow-md"
           >
             Login
-          </a>
+          </Link>
           <button className="md:hidden">
             <i data-lucide="menu" className="w-6 h-6 text-gray-700 hover:text-indigo-600"></i>
           </button>

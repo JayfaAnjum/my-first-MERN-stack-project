@@ -30,12 +30,12 @@ export default function Home() {
 
             {/* Cart + Mobile Menu */}
            <div className="flex items-center space-x-4">
-  <a
-    href="#"
+  <Link
+    to="/login"
     className="px-10 py-2 rounded-lg font-semibold bg-white text-pink-900 hover:bg-pink-900 hover:text-white transition shadow-md"
   >
     Login
-  </a>
+  </Link>
 
   {/* Mobile Menu Icon (optional) */}
   <button className="md:hidden">
