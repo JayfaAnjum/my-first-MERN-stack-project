@@ -23,6 +23,7 @@ A full-featured MERN stack E-Commerce application built with modern tools and ar
 
 - 📄 **Pagination**
   - Efficient product listing with backend pagination
+  - Added real time toast notification using Sonner 
 
 - 🧠 **Planned Features**
   - [ ] Redux Toolkit for global state management
