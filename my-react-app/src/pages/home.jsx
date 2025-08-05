@@ -36,6 +36,12 @@ export default function Home() {
   >
     Login
   </Link>
+   <Link
+    to="/register"
+    className="px-10 py-2 rounded-lg font-semibold bg-white text-pink-900 hover:bg-pink-900 hover:text-white transition shadow-md"
+  >
+    Register
+  </Link>
 
   {/* Mobile Menu Icon (optional) */}
   <button className="md:hidden">
